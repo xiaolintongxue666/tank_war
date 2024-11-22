@@ -65,17 +65,16 @@ while running:
 
     # 检查子弹与坦克的碰撞，忽略子弹与发射它的坦克之间的碰撞
     for bullet in bullets:
-        if bullet.timer > 10:  # 忽略子弹发射后的前10帧
-            hit_tank = pygame.sprite.spritecollideany(bullet, tanks)
-            if hit_tank and hit_tank != bullet.shooter:
-                if hit_tank == tank1:
-                    winner = "Blue Tank Wins!"
-                elif hit_tank == tank2:
-                    winner = "Red Tank Wins!"
-                hit_tank.kill()
-                bullet.kill()
-                running = False
-                break
+        hit_tank = pygame.sprite.spritecollideany(bullet, tanks)
+        if hit_tank and hit_tank != bullet.shooter:
+            if hit_tank == tank1:
+                winner = "Blue Tank Wins!"
+            elif hit_tank == tank2:
+                winner = "Red Tank Wins!"
+            hit_tank.kill()
+            bullet.kill()
+            running = False
+            break
 
     screen.fill((255, 255, 255))
     walls.draw(screen)
