@@ -11,7 +11,8 @@ class Tank(pygame.sprite.Sprite):
         self.color = color
         self.rect = self.image.get_rect(center=position)
         self.speed = TANK_SPEED
-        self.direction = pygame.math.Vector2(0, -1)
+        
+        self.direction = pygame.math.Vector2(0,1)
         self.controls = controls
         self.update_image()
 
@@ -29,22 +30,32 @@ class Tank(pygame.sprite.Sprite):
         ])
 
     def update(self, keys_pressed, walls):
-        rotation = 0
+        new_position = pygame.math.Vector2(self.rect.center)
+        
+        # 初始化方向
+        new_direction = pygame.math.Vector2(0, 0)
+        
+        # 检查按键状态
         if keys_pressed[self.controls['left']]:
-            rotation = 5
+            new_direction += pygame.math.Vector2(-1, 0)
         if keys_pressed[self.controls['right']]:
-            rotation = -5
-        self.direction.rotate_ip(rotation)
-        self.update_image()  # 更新图像以反映方向变化
-
+            new_direction += pygame.math.Vector2(1, 0)
         if keys_pressed[self.controls['up']]:
-            new_position = self.rect.center + self.direction * self.speed
-            if self.is_within_bounds(new_position) and not self.collides_with_walls(new_position, walls):
-                self.rect.center = new_position
+            new_direction += pygame.math.Vector2(0, -1)
         if keys_pressed[self.controls['down']]:
-            new_position = self.rect.center - self.direction * self.speed
-            if self.is_within_bounds(new_position) and not self.collides_with_walls(new_position, walls):
-                self.rect.center = new_position
+            new_direction += pygame.math.Vector2(0, 1)
+        
+        # 如果有按键按下，更新方向；否则保持静止
+        if new_direction.length() > 0:
+            self.direction = new_direction.normalize()
+            new_position += self.direction * self.speed
+        
+        # 检查是否可以移动
+        if self.check_wall(new_position, walls):
+            self.rect.center = new_position
+
+        # 更新图像
+        self.update_image()
 
     def is_within_bounds(self, position):
         x, y = position
@@ -56,4 +67,9 @@ class Tank(pygame.sprite.Sprite):
         return any(temp_rect.colliderect(wall.rect) for wall in walls)
 
     def shoot(self):
-        return Bullet(self.rect.center, self.direction, self)
+        barrel_end = pygame.math.Vector2(self.rect.center) + self.direction * 25  # 炮管末端
+        return Bullet(barrel_end, self.direction, self)
+
+    
+    def check_wall(self, new_position, walls):
+        return self.is_within_bounds(new_position) and not self.collides_with_walls(new_position, walls)
