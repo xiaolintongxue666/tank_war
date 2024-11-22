@@ -9,7 +9,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.Surface((10, 10))
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect(center=position)
-        self.direction = direction.normalize()
+        self.direction = direction
         self.speed = BULLET_SPEED
         self.shooter = shooter
         self.timer = 0  # 添加计时器

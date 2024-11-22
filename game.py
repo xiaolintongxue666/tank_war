@@ -28,8 +28,8 @@ tank2_controls = {
     'shoot': pygame.K_RETURN
 }
 
-tank1 = Tank((100, SCREEN_HEIGHT // 2), (255, 0, 0), tank1_controls)
-tank2 = Tank((SCREEN_WIDTH - 100, SCREEN_HEIGHT // 2), (0, 0, 255), tank2_controls)
+tank1 = Tank((100, SCREEN_HEIGHT // 2), "images/tank1.png", tank1_controls)
+tank2 = Tank((SCREEN_WIDTH - 100, SCREEN_HEIGHT // 2), "images/tank2.png", tank2_controls)
 
 tanks = pygame.sprite.Group(tank1, tank2)
 bullets = pygame.sprite.Group()
@@ -79,7 +79,7 @@ while running:
                 running = False
                 break
 
-    screen.fill(BG_COLOR)
+    screen.fill((255, 255, 255))
     walls.draw(screen)
     tanks.draw(screen)
     bullets.draw(screen)
