@@ -1,5 +1,3 @@
-# game.py
-
 import pygame
 from settings import *
 from tank import Tank
@@ -28,6 +26,19 @@ tank2_controls = {
     'shoot': pygame.K_RETURN
 }
 
+tank1_score = 0
+tank2_score = 0
+
+def reset_game():
+    """重置游戏状态"""
+    global tanks, bullets, winner
+    tank1.rect.center = (100, SCREEN_HEIGHT // 2)
+    tank2.rect.center = (SCREEN_WIDTH - 100, SCREEN_HEIGHT // 2)
+    tanks = pygame.sprite.Group(tank1, tank2)
+    bullets.empty()
+    winner = None
+
+# 初始化坦克
 tank1 = Tank((100, SCREEN_HEIGHT // 2), (255, 0, 0), tank1_controls)
 tank2 = Tank((SCREEN_WIDTH - 100, SCREEN_HEIGHT // 2), (0, 0, 255), tank2_controls)
 
@@ -36,7 +47,7 @@ bullets = pygame.sprite.Group()
 walls = pygame.sprite.Group()
 
 # 添加更多墙壁以创建复杂的地图布局
-walls.add(Wall((SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 100), (100, 200)))
+walls.add(Wall((SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 100), (75, 150)))
 walls.add(Wall((SCREEN_WIDTH // 4 - 50, SCREEN_HEIGHT // 4 - 50), (100, 100)))
 walls.add(Wall((3 * SCREEN_WIDTH // 4 - 50, SCREEN_HEIGHT // 4 - 50), (100, 100)))
 walls.add(Wall((SCREEN_WIDTH // 4 - 50, 3 * SCREEN_HEIGHT // 4 - 50), (100, 100)))
@@ -72,27 +83,35 @@ while running:
             if hit_tank and hit_tank != bullet.shooter:
                 if hit_tank == tank1:
                     winner = "Blue Tank Wins!"
+                    tank2_score += 1
                 elif hit_tank == tank2:
                     winner = "Red Tank Wins!"
+                    tank1_score += 1
                 hit_tank.kill()
                 bullet.kill()
-                running = False
                 break
 
     screen.fill(BG_COLOR)
+    
+    # 绘制计分板
+    score_text = font.render(f"Red: {tank1_score}   Blue: {tank2_score}", True, (0, 0, 0))
+    
+
     walls.draw(screen)
     tanks.draw(screen)
     bullets.draw(screen)
+    screen.blit(score_text, (20, 20))
     pygame.display.flip()
     clock.tick(60)
 
-# 显示赢家信息
-if winner:
-    screen.fill(BG_COLOR)
-    text = font.render(winner, True, (0, 255, 0))
-    text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-    screen.blit(text, text_rect)
-    pygame.display.flip()
-    pygame.time.wait(3000)
+    # 游戏结束处理
+    if winner:
+        screen.fill(BG_COLOR)
+        text = font.render(winner, True, (0, 255, 0))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        screen.blit(text, text_rect)
+        pygame.display.flip()
+        pygame.time.wait(2000)
+        reset_game()
 
 pygame.quit()
