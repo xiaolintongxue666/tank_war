@@ -1,5 +1,3 @@
-# game.py
-
 import pygame
 from settings import *
 from tank import Tank

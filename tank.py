@@ -4,6 +4,7 @@ import pygame
 from settings import *
 from bullet import Bullet
 
+
 class Tank(pygame.sprite.Sprite):
     def __init__(self, position, image_path, controls):
         super().__init__()
