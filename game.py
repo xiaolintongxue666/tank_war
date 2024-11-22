@@ -102,10 +102,10 @@ class Game:
                     if hit_tank and hit_tank != bullet.shooter:
                         if hit_tank == self.tank1:
                             score["Player 2"] += 1
-                            self.show_winner_screen("Green Tank Wins!")
+                            self.show_winner_screen("Red Tank Wins!")
                         elif hit_tank == self.tank2:
                             score["Player 1"] += 1
-                            self.show_winner_screen("Red Tank Wins!")
+                            self.show_winner_screen("Green Tank Wins!")
                         bullet.kill()
                         self.reset_game()  # Reset game and return to start screen
                         break
