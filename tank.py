@@ -9,7 +9,7 @@ class Tank(pygame.sprite.Sprite):
     def __init__(self, position, image_path, controls):
         super().__init__()
         self.original_image = pygame.image.load(image_path).convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (50, 50))  # 缩放图片
+        self.original_image = pygame.transform.scale(self.original_image, (40, 60))  # 缩放图片
         self.image = self.original_image
         self.rect = self.image.get_rect(center=position)
         self.speed = TANK_SPEED
