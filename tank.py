@@ -1,5 +1,3 @@
-# tank.py
-
 import pygame
 from settings import *
 from bullet import Bullet
@@ -53,3 +51,9 @@ class Tank(pygame.sprite.Sprite):
 
     def shoot(self):
         return Bullet(self.rect.center, self.direction, self)
+
+    def reset(self, position):
+        """重置坦克位置和方向"""
+        self.rect.center = position
+        self.direction = pygame.math.Vector2(0, -1)  # 重置方向为向上
+        self.update_image()  # 确保图像与方向一致
