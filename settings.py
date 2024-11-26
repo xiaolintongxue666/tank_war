@@ -33,3 +33,14 @@ WALL_POSITIONS = [
     ((SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 150), (100, 300)),
 ]
 
+WALL_POSITIONS1 = [
+    ((100, 100), (200, 50)),  # 左上角
+    ((SCREEN_WIDTH - 300, 100), (200, 50)),  # 右上角
+    ((100, SCREEN_HEIGHT - 150), (200, 50)),  # 左下角
+    ((SCREEN_WIDTH - 300, SCREEN_HEIGHT - 150), (200, 50)),  # 右下角
+    ((SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 100), (100, 200)),  # 中心
+    ((SCREEN_WIDTH // 4 - 50, SCREEN_HEIGHT // 4 - 50), (100, 100)),  # 左上
+    ((3 * SCREEN_WIDTH // 4 - 50, SCREEN_HEIGHT // 4 - 50), (100, 100)),  # 右上
+    ((SCREEN_WIDTH // 4 - 50, 3 * SCREEN_HEIGHT // 4 - 50), (100, 100)),  # 左下
+    ((3 * SCREEN_WIDTH // 4 - 50, 3 * SCREEN_HEIGHT // 4 - 50), (100, 100)),  # 右下
+]

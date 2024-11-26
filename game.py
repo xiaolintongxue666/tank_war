@@ -3,6 +3,7 @@ from settings import *
 from tank import Tank
 from wall import Wall
 from player import Player
+import random
 
 class Game:
     def __init__(self):
@@ -26,8 +27,14 @@ class Game:
 
     def setup_walls(self):
         """创建墙壁"""
-        for position, size in WALL_POSITIONS:
-            self.walls.add(Wall(position, size))
+        self.walls = pygame.sprite.Group()  # 确保墙壁组是空的
+        x = random.randint(1,100)
+        if x > 50:
+            for position, size in WALL_POSITIONS1:
+                self.walls.add(Wall(position, size))
+        else:
+            for position, size in WALL_POSITIONS:
+                self.walls.add(Wall(position, size))
 
     def show_start_screen(self):
         """显示开始屏幕"""
@@ -74,6 +81,7 @@ class Game:
         self.player1.reset((100, SCREEN_HEIGHT // 2))
         self.player2.reset((SCREEN_WIDTH - 100, SCREEN_HEIGHT // 2))
         self.bullets.empty()
+        self.setup_walls()  # 重新设置墙壁
 
     def pause_game(self):
         """暂停功能"""
