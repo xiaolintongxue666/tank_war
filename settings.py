@@ -24,12 +24,12 @@ TANK2_CONTROLS = {
 }
 
 WALL_POSITIONS = [
-    ((400, 250), (100, 200)),
-    ((200, 150), (100, 100)),
-    ((600, 150), (100, 100)),
-    ((200, 450), (100, 100)),
-    ((600, 450), (100, 100)),
-    ((350, 300), (300, 100)),
-    ((400, 200), (100, 300)),
+    ((SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 100), (100, 200)),
+    ((SCREEN_WIDTH // 4 - 50, SCREEN_HEIGHT // 4 - 50), (100, 100)),
+    ((3 * SCREEN_WIDTH // 4 - 50, SCREEN_HEIGHT // 4 - 50), (100, 100)),
+    ((SCREEN_WIDTH // 4 - 50, 3 * SCREEN_HEIGHT // 4 - 50), (100, 100)),
+    ((3 * SCREEN_WIDTH // 4 - 50, 3 * SCREEN_HEIGHT // 4 - 50), (100, 100)),
+    ((SCREEN_WIDTH // 2 - 150, SCREEN_HEIGHT // 2 - 50), (300, 100)),
+    ((SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 150), (100, 300)),
 ]
 
