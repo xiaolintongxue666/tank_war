@@ -87,8 +87,10 @@ class Game:
         """暂停功能"""
         paused = True
         while paused:
-            pause_text = self.font.render("Paused - Press P to Resume", True, (0, 0, 0))
-            self.screen.blit(pause_text, (SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2))
+            pygame.draw.rect(self.screen, (0, 0, 0, 128), (0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))  # 绘制半透明背景
+            pause_text = self.font.render("Paused - Press P to Resume", True, (255, 255, 255))
+            pause_rect = pause_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT/2))
+            self.screen.blit(pause_text, pause_rect)
             pygame.display.flip()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
