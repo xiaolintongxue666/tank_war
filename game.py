@@ -10,8 +10,11 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Tank War")
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(None, 74)
-        self.running = True
+        # 创建字体对象时指定字体大小
+        self.font = pygame.font.Font(None, 70)  
+        self.font1 = pygame.font.Font(None, 100)  
+        self.running = True        
+        pygame.display.set_caption("Tank War")
 
         # 玩家初始化
         self.player1 = Player("Player 1", TANK1_CONTROLS, "images/tank1.png", (100, SCREEN_HEIGHT // 2))
@@ -31,20 +34,32 @@ class Game:
         start_screen = True
         while start_screen:
             self.screen.fill(BG_COLOR)
-            title_text = self.font.render("Tank War", True, (0, 0, 0))
-            start_button = self.font.render("Start Game", True, (0, 0, 0))
-            start_button_rect = start_button.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-            self.screen.blit(title_text, (SCREEN_WIDTH / 2 - 100, 100))
-            self.screen.blit(start_button, start_button_rect)
+            # 直接渲染标题，不需要size参数
+            title_text = self.font1.render("Tank War", True, (0, 0, 0))
+            title_rect = title_text.get_rect(center=(SCREEN_WIDTH / 2, 200))
+            self.screen.blit(title_text, title_rect)
+            
+            # 绘制灰色按钮的代码...
+            start_button_color = (192, 192, 192)  # 灰色
+            start_button_rect = pygame.Rect(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 + 50, 300, 50)  # 按钮位置和大小
+            pygame.draw.rect(self.screen, start_button_color, start_button_rect, 0)  # 绘制灰色矩形
+            start_button_text = self.font.render("Start Game", True, (0, 0, 0))
+            start_button_text_rect = start_button_text.get_rect(center=start_button_rect.center)  # 文本居中
+            self.screen.blit(start_button_text, start_button_text_rect)              
+            # 确保你在这里添加了绘制灰色按钮的代码
+
             pygame.display.flip()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
                     start_screen = False
-                elif event.type == pygame.MOUSEBUTTONDOWN and start_button_rect.collidepoint(event.pos):
-                    start_screen = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if start_button_rect.collidepoint(event.pos):  # 确保你已经定义了start_button_rect
+                        start_screen = False
 
+        return start_screen
+    
     def show_winner_screen(self, winner_text):
         """显示获胜画面"""
         self.screen.fill(BG_COLOR)
