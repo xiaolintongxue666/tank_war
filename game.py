@@ -12,7 +12,7 @@ class Game:
         pygame.display.set_caption("Tank War")
         self.clock = pygame.time.Clock()
         # 创建字体对象时指定字体大小
-        self.font = pygame.font.Font(None, 70)  
+        self.font = pygame.font.Font(None, 60)  
         self.font1 = pygame.font.Font(None, 100)  
         self.running = True        
         pygame.display.set_caption("Tank War")
@@ -99,6 +99,41 @@ class Game:
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                     paused = False
 
+    def check_tank_collisions(self):
+        for tank1 in self.tanks:
+            for tank2 in self.tanks:
+                if tank1 != tank2 and tank1.rect.colliderect(tank2.rect):
+                    # 处理碰撞
+                    self.handle_collision(tank1, tank2)
+
+    def handle_collision(self,tank1, tank2):
+        # 计算两个坦克的相对位置
+        dx = tank2.rect.centerx - tank1.rect.centerx
+        dy = tank2.rect.centery - tank1.rect.centery
+        distance = (dx ** 2 + dy ** 2) ** 0.5  # 两点之间的距离
+
+        # 计算单位向量
+        unit_vector_x = dx / distance
+        unit_vector_y = dy / distance
+
+        # 弹开的力，可以根据需要调整这个值
+        force = 0.5
+
+        # 更新坦克1的方向和位置
+        tank1.rect.centerx += -unit_vector_x * force * tank1.speed
+        tank1.rect.centery += -unit_vector_y * force * tank1.speed
+
+        # 更新坦克2的方向和位置
+
+        tank2.rect.centerx += unit_vector_x * force * tank2.speed
+        tank2.rect.centery += unit_vector_y * force * tank2.speed
+
+        # 确保坦克不会离开屏幕
+        tank1.rect.x = max(0, min(SCREEN_WIDTH - tank1.rect.width, tank1.rect.x))
+        tank1.rect.y = max(0, min(SCREEN_HEIGHT - tank1.rect.height, tank1.rect.y))
+        tank2.rect.x = max(0, min(SCREEN_WIDTH - tank2.rect.width, tank2.rect.x))
+        tank2.rect.y = max(0, min(SCREEN_HEIGHT - tank2.rect.height, tank2.rect.y))
+        
     def check_collisions(self):
         """检查子弹与墙壁、坦克的碰撞"""
         pygame.sprite.groupcollide(self.bullets, self.walls, True, False)
@@ -135,6 +170,7 @@ class Game:
             self.tanks.update(keys_pressed, self.walls)
             self.bullets.update()
             self.check_collisions()
+            self.check_tank_collisions()
 
             self.screen.fill(BG_COLOR)
             self.walls.draw(self.screen)
