@@ -29,8 +29,9 @@ class Game:
         """创建墙壁"""
         self.walls = pygame.sprite.Group()  # 确保墙壁组是空的
         pick_map = random.choice(MAP_POOL)
+        color = (random.randint(1,128),random.randint(1,128),random.randint(1,128))
         for position, size in pick_map:
-            self.walls.add(Wall(position, size))
+            self.walls.add(Wall(position, size,color))
 
     def show_start_screen(self):
         """显示开始屏幕"""
