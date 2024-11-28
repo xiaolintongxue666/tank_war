@@ -28,13 +28,9 @@ class Game:
     def setup_walls(self):
         """创建墙壁"""
         self.walls = pygame.sprite.Group()  # 确保墙壁组是空的
-        x = random.randint(1,100)
-        if x > 50:
-            for position, size in WALL_POSITIONS1:
-                self.walls.add(Wall(position, size))
-        else:
-            for position, size in WALL_POSITIONS:
-                self.walls.add(Wall(position, size))
+        pick_map = random.choice(MAP_POOL)
+        for position, size in pick_map:
+            self.walls.add(Wall(position, size))
 
     def show_start_screen(self):
         """显示开始屏幕"""
@@ -160,9 +156,16 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == self.player1.controls['shoot']:
+                    cnt1 = 0 # 场上最多有BULLET_LIMIT个子弹
+                    cnt2 = 0
+                    for bullet_count in self.bullets:
+                        if bullet_count.shooter == self.player1.tank:
+                            cnt1 += 1
+                        else:
+                            cnt2 += 1
+                    if event.key == self.player1.controls['shoot'] and cnt1 < BULLET_LIMIT:
                         self.bullets.add(self.player1.tank.shoot())
-                    if event.key == self.player2.controls['shoot']:
+                    if event.key == self.player2.controls['shoot'] and cnt2 < BULLET_LIMIT:
                         self.bullets.add(self.player2.tank.shoot())
                     if event.key == pygame.K_p:
                         self.pause_game()
