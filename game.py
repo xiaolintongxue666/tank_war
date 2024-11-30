@@ -33,24 +33,77 @@ class Game:
         for position, size in pick_map:
             self.walls.add(Wall(position, size,color))
 
+    def show_settings_screen(self):
+        """显示设置界面"""
+        settings_screen = True
+        while settings_screen:
+            self.screen.fill(BG_COLOR)
+            title_text = self.font1.render("Settings", True, (0, 0, 0))
+            title_rect = title_text.get_rect(center=(SCREEN_WIDTH / 2, 100))
+            self.screen.blit(title_text, title_rect)
+            
+            # 坦克速度设置
+            tank_speed_text = self.font.render("Tank Speed: " + str(TANK_SPEED), True, (0, 0, 0))
+            tank_speed_rect = tank_speed_text.get_rect(center=(SCREEN_WIDTH / 2, 200))
+            self.screen.blit(tank_speed_text, tank_speed_rect)
+            
+            # 子弹速度设置
+            bullet_speed_text = self.font.render("Bullet Speed: " + str(BULLET_SPEED), True, (0, 0, 0))
+            bullet_speed_rect = bullet_speed_text.get_rect(center=(SCREEN_WIDTH / 2, 300))
+            self.screen.blit(bullet_speed_text, bullet_speed_rect)
+            
+            # 子弹限制设置
+            bullet_limit_text = self.font.render("Bullet Limit: " + str(BULLET_LIMIT), True, (0, 0, 0))
+            bullet_limit_rect = bullet_limit_text.get_rect(center=(SCREEN_WIDTH / 2, 400))
+            self.screen.blit(bullet_limit_text, bullet_limit_rect)
+            
+            # 绘制退出按钮
+            quit_button_color = (255, 0, 0)  # 红色
+            quit_button_rect = pygame.Rect(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 150, 200, 50)
+            pygame.draw.rect(self.screen, quit_button_color, quit_button_rect, 0)
+            quit_button_text = self.font.render("Quit", True, (0, 0, 0))
+            quit_button_text_rect = quit_button_text.get_rect(center=quit_button_rect.center)
+            self.screen.blit(quit_button_text, quit_button_text_rect)
+            
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    settings_screen = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:  # 假设按回车键保存设置
+                        # 保存设置到文件或变量
+                        settings_screen = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # 检查退出按钮是否被点击
+                    if quit_button_rect.collidepoint(event.pos):
+                        settings_screen = False  # 返回开始界面
+
+        return settings_screen
     def show_start_screen(self):
         """显示开始屏幕"""
         start_screen = True
         while start_screen:
             self.screen.fill(BG_COLOR)
-            # 直接渲染标题，不需要size参数
             title_text = self.font1.render("Tank War", True, (0, 0, 0))
             title_rect = title_text.get_rect(center=(SCREEN_WIDTH / 2, 200))
             self.screen.blit(title_text, title_rect)
             
-            # 绘制灰色按钮的代码...
             start_button_color = (192, 192, 192)  # 灰色
-            start_button_rect = pygame.Rect(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 + 50, 300, 50)  # 按钮位置和大小
-            pygame.draw.rect(self.screen, start_button_color, start_button_rect, 0)  # 绘制灰色矩形
+            start_button_rect = pygame.Rect(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 + 50, 300, 50)
+            pygame.draw.rect(self.screen, start_button_color, start_button_rect, 0)
             start_button_text = self.font.render("Start Game", True, (0, 0, 0))
-            start_button_text_rect = start_button_text.get_rect(center=start_button_rect.center)  # 文本居中
-            self.screen.blit(start_button_text, start_button_text_rect)              
-            # 确保你在这里添加了绘制灰色按钮的代码
+            start_button_text_rect = start_button_text.get_rect(center=start_button_rect.center)
+            self.screen.blit(start_button_text, start_button_text_rect)
+            
+            # 添加设置按钮
+            settings_button_color = (192, 192, 192)  # 灰色
+            settings_button_rect = pygame.Rect(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2 - 50, 300, 50)
+            pygame.draw.rect(self.screen, settings_button_color, settings_button_rect, 0)
+            settings_button_text = self.font.render("Settings", True, (0, 0, 0))
+            settings_button_text_rect = settings_button_text.get_rect(center=settings_button_rect.center)
+            self.screen.blit(settings_button_text, settings_button_text_rect)
 
             pygame.display.flip()
 
@@ -59,8 +112,12 @@ class Game:
                     self.running = False
                     start_screen = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if start_button_rect.collidepoint(event.pos):  # 确保你已经定义了start_button_rect
+                    if start_button_rect.collidepoint(event.pos):
                         start_screen = False
+                    elif settings_button_rect.collidepoint(event.pos):  # 调用设置界面
+                        self.show_settings_screen()  # 用户返回后，游戏继续
+                        if not self.running:  # 如果用户在设置中退出游戏，则结束
+                            start_screen = False
 
         return start_screen
     
