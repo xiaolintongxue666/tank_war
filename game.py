@@ -5,12 +5,16 @@ from wall import Wall
 from player import Player
 import random
 from sound_effect import *
+from button import Button
+from imgbutton import ImgButton
 class Game:
     def __init__(self):
         pygame.init()
         # 音效设置
         pygame.mixer.init()
         pygame.mixer.music.set_volume(GLOBAL_VOLUME)
+        pygame.mixer.music.load('sounds/YMCA.mp3')
+        pygame.mixer.music.play(-1)
         # 设置所有音效的音量
         for channel in range(pygame.mixer.get_num_channels()):
             pygame.mixer.Channel(channel).set_volume(GLOBAL_VOLUME)
@@ -23,6 +27,9 @@ class Game:
         self.font1 = pygame.font.Font(None, 100)  
         self.running = True        
         pygame.display.set_caption("Tank War")
+
+        # 创建音乐播放/静音按钮
+        self.music_button = ImgButton('images/music_button.png', (SCREEN_WIDTH - 150, 10), (50, 50), feedback="Music Changed")
 
         # 玩家初始化
         self.player1 = Player("Player 1", TANK1_CONTROLS, "images/tank1.png", (100, SCREEN_HEIGHT // 2))
@@ -227,6 +234,13 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.music_button.click(event):
+                        if pygame.mixer.music.get_busy():
+                            pygame.mixer.music.pause()
+                        else:
+                            pygame.mixer.music.unpause()
+
                 if event.type == pygame.KEYDOWN:
                     cnt1 = 0 # 场上最多有BULLET_LIMIT个子弹
                     cnt2 = 0
@@ -259,7 +273,8 @@ class Game:
             self.walls.draw(self.screen)
             self.tanks.draw(self.screen)
             self.bullets.draw(self.screen)
-
+            self.music_button.show(self.screen)
+            
             score_text = self.font.render(
                 f"{self.player1.name}: {self.player1.score} - {self.player2.name}: {self.player2.score}",
                 True,
