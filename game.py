@@ -29,7 +29,7 @@ class Game:
         """创建墙壁"""
         self.walls = pygame.sprite.Group()  # 确保墙壁组是空的
         pick_map = random.choice(MAP_POOL)
-        color = (random.randint(1,128),random.randint(1,128),random.randint(1,128))
+        color = (random.randint(1,128),random.randint(1,128),random.randint(1,128)) 
         for position, size in pick_map:
             self.walls.add(Wall(position, size,color))
 
@@ -190,7 +190,13 @@ class Game:
         
     def check_collisions(self):
         """检查子弹与墙壁、坦克的碰撞"""
-        pygame.sprite.groupcollide(self.bullets, self.walls, True, False)
+        bullet_wall_collision = pygame.sprite.groupcollide(self.bullets, self.walls, True, False)
+        for wall_hit_list in bullet_wall_collision.values():
+            for wall_hit in wall_hit_list:
+                wall_hit.update_hit()
+                break
+
+
 
         for bullet in self.bullets:
             hit_tank = pygame.sprite.spritecollideany(bullet, self.tanks)
