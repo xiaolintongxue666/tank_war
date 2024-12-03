@@ -4,10 +4,17 @@ from tank import Tank
 from wall import Wall
 from player import Player
 import random
-
+from sound_effect import *
 class Game:
     def __init__(self):
         pygame.init()
+        # 音效设置
+        pygame.mixer.init()
+        pygame.mixer.music.set_volume(GLOBAL_VOLUME)
+        # 设置所有音效的音量
+        for channel in range(pygame.mixer.get_num_channels()):
+            pygame.mixer.Channel(channel).set_volume(GLOBAL_VOLUME)
+
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Tank War")
         self.clock = pygame.time.Clock()
@@ -123,6 +130,7 @@ class Game:
     
     def show_winner_screen(self, winner_text):
         """显示获胜画面"""
+        victory_sound.play()
         self.screen.fill(BG_COLOR)
         text = self.font.render(winner_text, True, (0, 255, 0))
         text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
@@ -227,10 +235,18 @@ class Game:
                             cnt1 += 1
                         else:
                             cnt2 += 1
-                    if event.key == self.player1.controls['shoot'] and cnt1 < BULLET_LIMIT:
-                        self.bullets.add(self.player1.tank.shoot())
-                    if event.key == self.player2.controls['shoot'] and cnt2 < BULLET_LIMIT:
-                        self.bullets.add(self.player2.tank.shoot())
+                    if event.key == self.player1.controls['shoot']:
+                        if cnt1 < BULLET_LIMIT:
+                            self.bullets.add(self.player1.tank.shoot())
+                            fire_sound.play()
+                        else:
+                            fail_to_fire_sound.play()
+                    if event.key == self.player2.controls['shoot']:
+                        if cnt2 < BULLET_LIMIT:
+                            self.bullets.add(self.player2.tank.shoot())
+                            fire_sound.play()
+                        else:
+                            fail_to_fire_sound.play()
                     if event.key == pygame.K_p:
                         self.pause_game()
 

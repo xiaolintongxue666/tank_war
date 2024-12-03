@@ -7,6 +7,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 BG_COLOR = (255, 255, 255)
 BULLET_LIMIT = 1
+GLOBAL_VOLUME = 1 # 全局音量大小，在0到1之间
 
 TANK1_CONTROLS = {
     'left': pygame.K_a,
