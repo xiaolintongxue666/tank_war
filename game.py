@@ -38,6 +38,10 @@ class Game:
         self.walls = pygame.sprite.Group()
         self.setup_walls()
 
+    def save_settings(self):
+        with open('settings.txt', 'w') as f:
+            f.write(f"{TANK_SPEED}\n{BULLET_SPEED}\n{BULLET_LIMIT}")
+
     def setup_walls(self):
         """创建墙壁"""
         self.walls = pygame.sprite.Group()  # 确保墙壁组是空的
@@ -47,19 +51,17 @@ class Game:
             self.walls.add(Wall(position, size,color))
 
     def show_settings_screen(self):
-        """显示设置界面"""
-        global TANK_SPEED, BULLET_SPEED, BULLET_LIMIT  # 将 global 声明移到函数顶部
+        global TANK_SPEED, BULLET_SPEED, BULLET_LIMIT
         settings_screen = True
-        tank_speed = str(TANK_SPEED)
-        bullet_speed = str(BULLET_SPEED)
-        bullet_limit = str(BULLET_LIMIT)
+        tank_speed = str(TANK_SPEED)  # 确保是字符串
+        bullet_speed = str(BULLET_SPEED)  # 确保是字符串
+        bullet_limit = str(BULLET_LIMIT)  # 确保是字符串
         while settings_screen:
             self.screen.fill(BG_COLOR)
             title_text = self.font1.render("Settings", True, (0, 0, 0))
             title_rect = title_text.get_rect(center=(SCREEN_WIDTH / 2, 100))
             self.screen.blit(title_text, title_rect)
             
-            # 坦克速度设置
             tank_speed_text = self.font.render("Tank Speed: ", True, (0, 0, 0))
             tank_speed_rect = tank_speed_text.get_rect(center=(SCREEN_WIDTH / 2, 200))
             self.screen.blit(tank_speed_text, tank_speed_rect)
@@ -69,7 +71,6 @@ class Game:
             tank_speed_input_text_rect = tank_speed_input_text.get_rect(center=tank_speed_input_rect.center)
             self.screen.blit(tank_speed_input_text, tank_speed_input_text_rect)
             
-            # 子弹速度设置
             bullet_speed_text = self.font.render("Bullet Speed: ", True, (0, 0, 0))
             bullet_speed_rect = bullet_speed_text.get_rect(center=(SCREEN_WIDTH / 2, 300))
             self.screen.blit(bullet_speed_text, bullet_speed_rect)
@@ -79,7 +80,6 @@ class Game:
             bullet_speed_input_text_rect = bullet_speed_input_text.get_rect(center=bullet_speed_input_rect.center)
             self.screen.blit(bullet_speed_input_text, bullet_speed_input_text_rect)
             
-            # 子弹限制设置
             bullet_limit_text = self.font.render("Bullet Limit: ", True, (0, 0, 0))
             bullet_limit_rect = bullet_limit_text.get_rect(center=(SCREEN_WIDTH / 2, 400))
             self.screen.blit(bullet_limit_text, bullet_limit_rect)
@@ -91,7 +91,7 @@ class Game:
             
             # 绘制保存按钮
             save_button_color = (0, 255, 0)  # 绿色
-            save_button_rect = pygame.Rect(SCREEN_WIDTH / 2 - 250, SCREEN_HEIGHT / 2 + 170, 200, 50)
+            save_button_rect = pygame.Rect(SCREEN_WIDTH / 2 - 210, SCREEN_HEIGHT / 2 + 170, 200, 50)
             pygame.draw.rect(self.screen, save_button_color, save_button_rect, 0)
             save_button_text = self.font.render("Save", True, (0, 0, 0))
             save_button_text_rect = save_button_text.get_rect(center=save_button_rect.center)
@@ -99,7 +99,7 @@ class Game:
             
             # 绘制退出按钮
             quit_button_color = (255, 0, 0)  # 红色
-            quit_button_rect = pygame.Rect(SCREEN_WIDTH / 2 + 50, SCREEN_HEIGHT / 2 + 170, 200, 50)
+            quit_button_rect = pygame.Rect(SCREEN_WIDTH / 2 + 10, SCREEN_HEIGHT / 2 + 170, 200, 50)
             pygame.draw.rect(self.screen, quit_button_color, quit_button_rect, 0)
             quit_button_text = self.font.render("Quit", True, (0, 0, 0))
             quit_button_text_rect = quit_button_text.get_rect(center=quit_button_rect.center)
@@ -112,20 +112,17 @@ class Game:
                     self.running = False
                     settings_screen = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    # 检查退出按钮是否被点击
                     if quit_button_rect.collidepoint(event.pos):
-                        settings_screen = False  # 返回开始界面
-                    # 检查保存按钮是否被点击
+                        settings_screen = False
                     elif save_button_rect.collidepoint(event.pos):
                         try:
                             TANK_SPEED = int(tank_speed)
                             BULLET_SPEED = int(bullet_speed)
                             BULLET_LIMIT = int(bullet_limit)
-                            settings_screen = False  # 保存后返回
+                            self.save_settings()  # 调用保存设置的函数
+                            settings_screen = False
                         except ValueError:
-                            # 如果输入不是数字，则忽略
                             pass
-                    # 检查输入框是否被点击
                     elif tank_speed_input_rect.collidepoint(event.pos):
                         self.focus = 'tank_speed'
                     elif bullet_speed_input_rect.collidepoint(event.pos):
@@ -133,51 +130,37 @@ class Game:
                     elif bullet_limit_input_rect.collidepoint(event.pos):
                         self.focus = 'bullet_limit'
                 elif event.type == pygame.KEYDOWN:
-                    if self.focus:
-                        if event.key == pygame.K_RETURN:  # 保存设置
-                            try:
-                                if self.focus == 'tank_speed':
-                                    TANK_SPEED = int(tank_speed)
-                                elif self.focus == 'bullet_speed':
-                                    BULLET_SPEED = int(bullet_speed)
-                                elif self.focus == 'bullet_limit':
-                                    BULLET_LIMIT = int(bullet_limit)
-                            except ValueError:
-                                pass  # 如果输入不是数字，则忽略
-                            self.focus = None  # 取消焦点
-                        elif event.key == pygame.K_BACKSPACE:  # 删除字符
-                            if self.focus in ['tank_speed', 'bullet_speed', 'bullet_limit']:
-                                if tank_speed:
-                                    tank_speed = tank_speed[:-1]
-                                elif bullet_speed:
-                                    bullet_speed = bullet_speed[:-1]
-                                elif bullet_limit:
-                                    bullet_limit = bullet_limit[:-1]
-                        else:  # 输入新字符
-                            if event.key in (pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
-                                             pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9):
-                                if self.focus == 'tank_speed':
-                                    tank_speed += str(event.unicode)
-                                elif self.focus == 'bullet_speed':
-                                    bullet_speed += str(event.unicode)
-                                elif self.focus == 'bullet_limit':
-                                    bullet_limit += str(event.unicode)
+                    if self.focus == 'tank_speed':
+                        if event.key == pygame.K_BACKSPACE:
+                            tank_speed = tank_speed[:-1]
+                        elif event.key in (pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
+                                        pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9):
+                            tank_speed += event.unicode
+                    elif self.focus == 'bullet_speed':
+                        if event.key == pygame.K_BACKSPACE:
+                            bullet_speed = bullet_speed[:-1]
+                        elif event.key in (pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
+                                        pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9):
+                            bullet_speed += event.unicode
+                    elif self.focus == 'bullet_limit':
+                        if event.key == pygame.K_BACKSPACE:
+                            bullet_limit = bullet_limit[:-1]
+                        elif event.key in (pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
+                                        pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9):
+                            bullet_limit += event.unicode
 
             # 绘制文本输入框中的文本
-            if self.focus:
-                if self.focus == 'tank_speed':
-                    tank_speed_text = self.font.render(tank_speed, True, (255, 255, 255))
-                elif self.focus == 'bullet_speed':
-                    bullet_speed_text = self.font.render(bullet_speed, True, (255, 255, 255))
-                elif self.focus == 'bullet_limit':
-                    bullet_limit_text = self.font.render(bullet_limit, True, (255, 255, 255))
-                # 根据焦点绘制对应的文本
-                if self.focus == 'tank_speed':
-                    self.screen.blit(tank_speed_text, tank_speed_input_text_rect)
-                elif self.focus == 'bullet_speed':
-                    self.screen.blit(bullet_speed_text, bullet_speed_input_text_rect)
-                elif self.focus == 'bullet_limit':
-                    self.screen.blit(bullet_limit_text, bullet_limit_input_text_rect)
+            if self.focus == 'tank_speed':
+                tank_speed_input_text = self.font.render(tank_speed, True, (255, 255, 255))
+                self.screen.blit(tank_speed_input_text, tank_speed_input_text_rect)
+            elif self.focus == 'bullet_speed':
+                bullet_speed_input_text = self.font.render(bullet_speed, True, (255, 255, 255))
+                self.screen.blit(bullet_speed_input_text, bullet_speed_input_text_rect)
+            elif self.focus == 'bullet_limit':
+                bullet_limit_input_text = self.font.render(bullet_limit, True, (255, 255, 255))
+                self.screen.blit(bullet_limit_input_text, bullet_limit_input_text_rect)
+
+            pygame.display.flip()
 
         return settings_screen
     
