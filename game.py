@@ -242,7 +242,7 @@ class Game:
                             pygame.mixer.music.unpause()
 
                 if event.type == pygame.KEYDOWN:
-                    cnt1 = 0 # 场上最多有BULLET_LIMIT个子弹
+                    cnt1 = 0  
                     cnt2 = 0
                     for bullet_count in self.bullets:
                         if bullet_count.shooter == self.player1.tank:
@@ -251,16 +251,20 @@ class Game:
                             cnt2 += 1
                     if event.key == self.player1.controls['shoot']:
                         if cnt1 < BULLET_LIMIT:
-                            self.bullets.add(self.player1.tank.shoot())
-                            fire_sound.play()
-                        else:
-                            fail_to_fire_sound.play()
+                            new_bullet = self.player1.shoot()
+                            if new_bullet:
+                                self.bullets.add(new_bullet)
+                                fire_sound.play()
+                            else:
+                                fail_to_fire_sound.play()
                     if event.key == self.player2.controls['shoot']:
                         if cnt2 < BULLET_LIMIT:
-                            self.bullets.add(self.player2.tank.shoot())
-                            fire_sound.play()
-                        else:
-                            fail_to_fire_sound.play()
+                            new_bullet = self.player2.shoot()
+                            if new_bullet:
+                                self.bullets.add(new_bullet)
+                                fire_sound.play()
+                            else:
+                                fail_to_fire_sound.play()
                     if event.key == pygame.K_p:
                         self.pause_game()
 
