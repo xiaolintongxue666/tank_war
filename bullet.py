@@ -6,7 +6,7 @@ from settings import *
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, position, direction, shooter):
         super().__init__()
-        self.image = pygame.Surface((10, 10))
+        self.image = pygame.Surface((11, 11))
         self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect(center=position)
         self.direction = direction
