@@ -1,5 +1,5 @@
 from tank import Tank
-
+from settings import *
 class Player:
     def __init__(self, name, controls, tank_image, initial_position):
         self.name = name

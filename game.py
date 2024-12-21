@@ -7,6 +7,7 @@ import random
 from sound_effect import *
 from button import Button
 from imgbutton import ImgButton
+from powerup import Powerup
 class Game:
     def __init__(self):
         pygame.init()
@@ -23,11 +24,15 @@ class Game:
         pygame.display.set_caption("Tank War")
         self.clock = pygame.time.Clock()
         # 创建字体对象时指定字体大小
+        self.powerups = pygame.sprite.Group()
+        for _ in range(POWERUP_NUMBER):
+            self.generate_powerups()
         self.font = pygame.font.Font(None, 60)  
         self.font1 = pygame.font.Font(None, 100)  
         self.running = True        
         pygame.display.set_caption("Tank War")
 
+        
         # 创建音乐播放/静音按钮
         self.music_button = ImgButton('images/music_button.png', (SCREEN_WIDTH - 150, 10), (50, 50), feedback="Music Changed")
 
@@ -38,6 +43,21 @@ class Game:
         self.bullets = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
         self.setup_walls()
+
+    def generate_powerups(self):
+            """生成道具"""
+            powerup_positions = [(random.randint(50, SCREEN_WIDTH - 50), random.randint(50, SCREEN_HEIGHT - 50)) for _ in range(1)]
+            powerup_images = {
+                'speed_up': 'images/powerup_speed.png',
+                'bullet_power_up': 'images/powerup_bullet.png',
+                'bullet_limit_increase': 'images/powerup_limit.png'
+            }
+
+            for position in powerup_positions:
+                effect = random.choice(list(powerup_images.keys()))
+                imgprocess = pygame.image.load(powerup_images[effect]).convert_alpha()
+                imgprocess = pygame.transform.scale(imgprocess, (40,40))
+                self.powerups.add(Powerup(position, imgprocess, effect))
 
     def setup_walls(self):
         """创建墙壁"""
@@ -150,7 +170,10 @@ class Game:
         self.player1.reset((100, SCREEN_HEIGHT // 2))
         self.player2.reset((SCREEN_WIDTH - 100, SCREEN_HEIGHT // 2))
         self.bullets.empty()
+        self.powerups.empty()
         self.setup_walls()  # 重新设置墙壁
+        for _ in range(POWERUP_NUMBER):
+            self.generate_powerups()
 
     def pause_game(self):
         """暂停功能"""
@@ -211,19 +234,61 @@ class Game:
                 wall_hit.update_hit()
                 break
 
+         # 检测坦克与道具的碰撞
+
+        for tank in self.tanks:
+            hit_powerup = pygame.sprite.spritecollideany(tank, self.powerups)
+            if hit_powerup:
+                hit_powerup.apply_effect(tank)
+                hit_powerup.kill()
+                 #self.generate_powerups()  # 重新生成道具
+
+
+    def draw_health_bars(self):
+        """绘制玩家血条"""
+        bar_height = 10
+
+        bar_width = 100
+
+        bar_x = 20
+
+        bar_y = 50
+
+        # 绘制玩家1的血条
+
+        pygame.draw.rect(self.screen, (255, 0, 0), (bar_x, bar_y, bar_width, bar_height))  # 红色背景
+
+        pygame.draw.rect(self.screen, (0, 255, 0), (bar_x, bar_y, bar_width * (self.player1.tank.HP / 3), bar_height))  # 绿色血量
+
+        health_text = self.font.render(f"HP: {self.player1.tank.HP}/3", True, (0, 0, 0))
+        self.screen.blit(health_text, (bar_x + bar_width + 10, bar_y - 5))
+
+        # 绘制玩家2的血条
+
+        bar_x = SCREEN_WIDTH - bar_width - 20
+
+        pygame.draw.rect(self.screen, (255, 0, 0), (bar_x, bar_y, bar_width, bar_height))  # 红色背景
+
+        pygame.draw.rect(self.screen, (0, 255, 0), (bar_x, bar_y, bar_width * (self.player2.tank.HP / 3), bar_height))  # 绿色血量
+
+        health_text = self.font.render(f"HP: {self.player2.tank.HP}/3", True, (0, 0, 0))
+        self.screen.blit(health_text, (bar_x - 100, bar_y - 5))
 
 
         for bullet in self.bullets:
             hit_tank = pygame.sprite.spritecollideany(bullet, self.tanks)
             if hit_tank and hit_tank != bullet.shooter:
+                dmg = bullet.shooter.bullet_power
                 bullet.kill()
-                if hit_tank == self.player1.tank:
+                hit_tank.take_damage(dmg)
+                if hit_tank == self.player1.tank and hit_tank.HP <= 0:
                     self.player2.score += 1
                     self.show_winner_screen(f"{self.player2.name} Wins!")
-                elif hit_tank == self.player2.tank:
+                    self.reset_game()
+                elif hit_tank == self.player2.tank and hit_tank.HP <= 0:
                     self.player1.score += 1
                     self.show_winner_screen(f"{self.player1.name} Wins!")
-                self.reset_game()
+                    self.reset_game()
                 break
 
     def run(self):
@@ -250,13 +315,13 @@ class Game:
                         else:
                             cnt2 += 1
                     if event.key == self.player1.controls['shoot']:
-                        if cnt1 < BULLET_LIMIT:
+                        if cnt1 < self.player1.tank.bullet_limit:
                             self.bullets.add(self.player1.tank.shoot())
                             fire_sound.play()
                         else:
                             fail_to_fire_sound.play()
                     if event.key == self.player2.controls['shoot']:
-                        if cnt2 < BULLET_LIMIT:
+                        if cnt2 < self.player2.tank.bullet_limit:
                             self.bullets.add(self.player2.tank.shoot())
                             fire_sound.play()
                         else:
@@ -274,7 +339,9 @@ class Game:
             self.tanks.draw(self.screen)
             self.bullets.draw(self.screen)
             self.music_button.show(self.screen)
-            
+            self.draw_health_bars()
+            self.powerups.draw(self.screen)  # 绘制道具
+
             score_text = self.font.render(
                 f"{self.player1.name}: {self.player1.score} - {self.player2.name}: {self.player2.score}",
                 True,

@@ -11,8 +11,11 @@ class Tank(pygame.sprite.Sprite):
         self.image = self.original_image
         self.rect = self.image.get_rect(center=position)
         self.speed = TANK_SPEED
+        self.bullet_power = BULLET_POWER
+        self.bullet_limit = BULLET_LIMIT
         self.direction = pygame.math.Vector2(0, -1)
         self.controls = controls
+        self.HP = TANK_HP
 
     def update_image(self):
         angle = self.direction.angle_to(pygame.math.Vector2(0, -1))  # 修正角度
@@ -40,6 +43,9 @@ class Tank(pygame.sprite.Sprite):
             if self.is_within_bounds(new_position) and not self.collides_with_walls(new_position, walls):
                 self.rect.center = new_position
 
+    def take_damage(self, dmg):
+            self.HP -= dmg
+
     def is_within_bounds(self, position):
         x, y = position
         return 0 <= x <= SCREEN_WIDTH and 0 <= y <= SCREEN_HEIGHT
@@ -56,4 +62,9 @@ class Tank(pygame.sprite.Sprite):
         """重置坦克位置和方向"""
         self.rect.center = position
         self.direction = pygame.math.Vector2(0, -1)  # 重置方向为向上
-        self.update_image()  # 确保图像与方向一致
+        self.update_image()  # 确保图像与方向一致\
+        self.speed = TANK_SPEED  # 重置速度
+        self.HP = TANK_HP
+        self.bullet_power = BULLET_POWER  # 重置子弹威力
+
+        self.bullet_limit = BULLET_LIMIT  # 重置子弹限制
