@@ -13,6 +13,7 @@ class Tank(pygame.sprite.Sprite):
         self.speed = TANK_SPEED
         self.bullet_power = BULLET_POWER
         self.bullet_limit = BULLET_LIMIT
+        self.bullet_width = BULLET_WIDTH
         self.direction = pygame.math.Vector2(0, -1)
         self.controls = controls
         self.HP = TANK_HP
@@ -56,7 +57,7 @@ class Tank(pygame.sprite.Sprite):
         return any(temp_rect.colliderect(wall.rect) for wall in walls)
 
     def shoot(self):
-        return Bullet(self.rect.center, self.direction, self)
+        return Bullet(self.rect.center, self.direction, self, self.bullet_width)
 
     def reset(self, position):
         """重置坦克位置和方向"""
@@ -66,5 +67,5 @@ class Tank(pygame.sprite.Sprite):
         self.speed = TANK_SPEED  # 重置速度
         self.HP = TANK_HP
         self.bullet_power = BULLET_POWER  # 重置子弹威力
-
+        self.bullet_width = BULLET_WIDTH
         self.bullet_limit = BULLET_LIMIT  # 重置子弹限制

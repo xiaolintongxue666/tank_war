@@ -50,7 +50,8 @@ class Game:
             powerup_images = {
                 'speed_up': 'images/powerup_speed.png',
                 'bullet_power_up': 'images/powerup_bullet.png',
-                'bullet_limit_increase': 'images/powerup_limit.png'
+                'bullet_limit_increase': 'images/powerup_limit.png',
+                'super_big_bullet': 'images/powerup_superbigbullet.png'
             }
 
             for position in powerup_positions:

@@ -18,3 +18,6 @@ class Powerup(pygame.sprite.Sprite):
 
         elif self.effect == 'bullet_limit_increase':
             tank.bullet_limit += 1
+        
+        elif self.effect == 'super_big_bullet':
+            tank.bullet_width = tank.bullet_width*1.2 + 10
